@@ -160,7 +160,17 @@ function FloatingHearts() {
 }
 
 export default function Countdown() {
-  const targetDate = new Date(2026, 11, 31);
+  const getNextBirthday = () => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const birthday = new Date(currentYear, 5, 12); // Junio 12 (mes 5 = junio, 0-indexed)
+    if (birthday < now) {
+      return new Date(currentYear + 1, 5, 12);
+    }
+    return birthday;
+  };
+  
+  const targetDate = getNextBirthday();
   const { days, hours, minutes, seconds, isBirthday } = useCountdown(targetDate);
 
   const timeCards = [
@@ -190,36 +200,40 @@ export default function Countdown() {
 
       {isBirthday ? (
         <motion.div
-          className="text-center"
+          className="text-center relative"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, type: "spring" }}
         >
-          <p className="text-4xl md:text-6xl font-bold text-romantic mb-8">
+          <div className="absolute -inset-8 bg-white/10 rounded-full blur-xl" />
+          <p className="text-4xl md:text-6xl font-bold text-romantic mb-8 relative z-10">
             ¡Feliz Cumpleaños!
           </p>
           <motion.span
-            className="text-8xl md:text-9xl inline-block"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            className="text-8xl md:text-9xl inline-block drop-shadow-2xl"
+            animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+            transition={{ duration: 3, repeat: Infinity }}
           >
             ❤️
           </motion.span>
         </motion.div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
-          {timeCards.map((card) => (
-            <div
+          {timeCards.map((card, idx) => (
+            <motion.div
               key={card.label}
-              className="bg-bg-primary/80 backdrop-blur rounded-2xl p-6 flex flex-col items-center border border-romantic/30"
+              className="bg-white/5 backdrop-blur-md rounded-2xl p-6 flex flex-col items-center border border-pink-400/20 shadow-xl shadow-pink-500/20"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
             >
-              <span className="text-4xl md:text-6xl font-bold text-romantic">
+              <span className="text-4xl md:text-6xl font-bold bg-gradient-to-b from-pink-300 to-rose-400 bg-clip-text text-transparent drop-shadow-lg">
                 {card.value.toString().padStart(2, "0")}
               </span>
-              <span className="text-text-secondary text-sm uppercase tracking-wider mt-2">
+              <span className="text-pink-200/80 text-sm uppercase tracking-wider mt-2 font-medium">
                 {card.label}
               </span>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

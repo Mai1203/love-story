@@ -6,10 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Hero from "@/components/Hero";
 import Timeline from "@/components/Timeline";
 import Letter from "@/components/Letter";
-import Map from "@/components/Map";
 import Gallery from "@/components/Gallery";
-import Stars from "@/components/Stars";
-import Secrets from "@/components/Secrets";
 import Memories from "@/components/Memories";
 import Countdown from "@/components/Countdown";
 import FinalSection from "@/components/FinalSection";
@@ -70,10 +67,7 @@ export default function Home() {
       <Hero />
       <Timeline />
       <Letter />
-      <Map />
       <Gallery />
-      <Stars />
-      <Secrets />
       <Memories />
       <Countdown />
       <FinalSection />
