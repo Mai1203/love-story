@@ -167,6 +167,7 @@ export default function Memories() {
     try {
       const formData = new FormData();
       formData.set("file", file);
+      formData.set("folder", "memories");
 
       const res = await fetch("/api/upload", {
         method: "POST",
