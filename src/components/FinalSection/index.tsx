@@ -34,15 +34,14 @@ const charVariants = {
 };
 
 const floatingHeartVariants = {
+  hidden: { opacity: 0, y: -100 },
   animate: {
-    y: [-100, -600],
-    x: [0, 30, -20, 10],
-    opacity: [0, 0.6, 0.6, 0],
+    opacity: [0, 0.6, 0],
+    y: [-100, -300],
     transition: {
-      duration: 6,
+      duration: 4,
       repeat: Infinity,
-      ease: "easeInOut",
-      delay: 2,
+      delay: 1.5,
     },
   },
 };

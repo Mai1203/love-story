@@ -18,8 +18,9 @@ export default function CloudinaryImage({
   priority = false,
 }: CloudinaryImageProps) {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const isAbsoluteUrl = src.startsWith('http://') || src.startsWith('https://');
 
-  if (!cloudName) {
+  if (!cloudName || isAbsoluteUrl) {
     return (
       <img
         src={src}
@@ -27,6 +28,7 @@ export default function CloudinaryImage({
         className={className}
         width={width}
         height={height}
+        loading={priority ? "eager" : "lazy"}
       />
     );
   }
