@@ -10,7 +10,7 @@ const LETTER_TEXT = `Mi amor,
 
 Hoy es un día especial, no porque el calendario lo diga, sino porque tú existes.
 
-Cada momento a tu lado es un tesoro que guardo en mi corazón. Desde aquella primera mirada hasta este viaje bajo las estrellas, cada segundo contigo ha valido la pena.
+Cada momento a tu lado es un tesoro que guardo en mi corazón. Desde aquella primera mirada bajo las estrellas, cada segundo contigo ha valido la pena.
 
 Gracias por ser mi compañera de aventuras, mi paz en los días difíciles y mi alegría en los momentos simples.
 

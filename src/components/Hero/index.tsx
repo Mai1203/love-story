@@ -69,6 +69,15 @@ export default function Hero() {
     }
   }, [displayedText, firstLine.length]);
 
+  useEffect(() => {
+    if (showSecondLine) {
+      const timer = setTimeout(() => {
+        window.dispatchEvent(new Event('heroAnimationComplete'));
+      }, 900);
+      return () => clearTimeout(timer);
+    }
+  }, [showSecondLine]);
+
   const sunflowers = Array.from({ length: 6 }).map((_, i) => ({
     id: i,
     left: `${Math.random() * 80 + 10}%`,
