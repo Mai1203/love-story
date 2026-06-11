@@ -5,33 +5,41 @@ import { fadeIn, slideUp } from '@/animations';
 import Sunflower from '@/components/Shared/Sunflower';
 import { useState, useEffect, useRef } from 'react';
 
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "demo";
+// Cloudinary URL con transformaciones automáticas: formato y calidad optimizados
+const VIDEO_URL = `https://res.cloudinary.com/${cloudName}/video/upload/f_auto,q_auto/video_hero_x8o2ze`;
+// Thumbnail generado por Cloudinary como poster (primer frame, formato webp)
+const POSTER_URL = `https://res.cloudinary.com/${cloudName}/video/upload/f_webp,q_auto,w_1280,so_0/video_hero_x8o2ze.jpg`;
+
 export default function Hero() {
   const [displayedText, setDisplayedText] = useState('');
   const [showSecondLine, setShowSecondLine] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
   const firstLine = "Hay personas que cambian tu vida...";
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  // Detectar si estamos en desktop para renderizar múltiples videos
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "demo";
-    setVideoUrl(`https://res.cloudinary.com/${cloudName}/video/upload/video_hero_x8o2ze.mp4`);
+    setIsDesktop(window.matchMedia('(min-width: 768px)').matches);
+    const mq = window.matchMedia('(min-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
   }, []);
 
   useEffect(() => {
-    if (videoUrl) {
-      videoRefs.current.forEach((video, i) => {
-        if (video) {
-          const setOffset = () => {
-            video.currentTime = i * 5;
-          };
-          video.addEventListener('loadedmetadata', setOffset, { once: true });
-        }
-      });
-    }
-  }, [videoUrl]);
+    videoRefs.current.forEach((video, i) => {
+      if (video) {
+        const setOffset = () => {
+          video.currentTime = i * 5;
+        };
+        video.addEventListener('loadedmetadata', setOffset, { once: true });
+      }
+    });
+  }, [isDesktop]);
 
-  const videoCount = 3;
+  const videoCount = isDesktop ? 3 : 1;
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
@@ -71,15 +79,17 @@ export default function Hero() {
   return (
     <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden">
       <div className="absolute inset-0 md:flex">
-        {videoUrl && Array.from({ length: videoCount }).map((_, i) => (
+        {Array.from({ length: videoCount }).map((_, i) => (
           <video
             key={i}
             ref={(el: HTMLVideoElement | null) => { videoRefs.current[i] = el; }}
-            src={videoUrl}
+            src={VIDEO_URL}
+            poster={POSTER_URL}
             autoPlay
             muted
             loop
             playsInline
+            preload="metadata"
             className={`h-full w-auto object-cover ${i % 2 === 1 ? 'scale-x-[-1]' : ''}`}
           />
         ))}
