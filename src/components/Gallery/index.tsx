@@ -223,11 +223,11 @@ export default function Gallery() {
                 key={item.id}
                 onClick={() => openLightbox(index)}
                 className="relative rounded-2xl overflow-hidden shadow-lg border border-white/10 hover:border-romantic/50 transition-all cursor-pointer group aspect-[4/3] bg-bg-primary/50"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0, transition: { type: "spring" } }
-                }}
-                whileHover={{ y: -5, shadow: "0 25px 50px -12px rgba(0,0,0,0.5)" }}
+variants={{
+                   hidden: { opacity: 0, y: 20 },
+                   visible: { opacity: 1, y: 0, transition: { type: "spring" as const } }
+                 }}
+                whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)" }}
               >
                 <CloudinaryImage
                   src={item.url}
