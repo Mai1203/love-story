@@ -101,35 +101,53 @@ export default function Memories() {
   } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [localImages, setLocalImages] = useState<Set<string>>(new Set());
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  const fetchMemories = useCallback(async (silent = false) => {
+    if (!silent) {
+      setMounted(true);
+    }
+
+    try {
+      const res = await fetch("/api/memories");
+      if (!res.ok) throw new Error("Error cargando recuerdos");
+
+      const data = await res.json();
+      const syncedImages = data.images as string[][];
+
+      setMemories((prev) =>
+        prev.map((m, i) => ({
+          ...m,
+          images: Array.from(
+            new Set([...(syncedImages[i] || []), ...m.images])
+          ),
+        }))
+      );
+    } catch (error) {
+      console.warn("Memories sync fallback:", error);
+
+      if (typeof window === "undefined") return;
+      try {
+        const saved = localStorage.getItem("memories-images");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setMemories((prev) =>
+            prev.map((m, i) => ({
+              ...m,
+              images: Array.from(
+                new Set([...((parsed[i] as string[]) || []), ...m.images])
+              ),
+            }))
+          );
+        }
+      } catch {}
+    } finally {
+    }
+  }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const saved = localStorage.getItem("memories-images");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        const uniqueImages = new Set<string>(parsed);
-        setLocalImages(uniqueImages);
-        setMemories((prev) =>
-          prev.map((m, i) => ({
-            ...m,
-            images: (parsed[i] as string[]) || [],
-          }))
-        );
-      }
-    } catch {}
-  }, []);
-
-  const persistImages = useCallback((updated: MemoryCategory[]) => {
-    const imagesByCard = updated.map((m) => m.images);
-    const flattened = imagesByCard.flat();
-    localStorage.setItem("memories-images", JSON.stringify(imagesByCard));
-    setLocalImages(new Set(flattened));
-  }, []);
+    fetchMemories();
+  }, [fetchMemories]);
 
   const openUploadModal = (index: number) => setUploadModal({ index });
   const closeUploadModal = () => setUploadModal(null);
@@ -168,6 +186,7 @@ export default function Memories() {
       const formData = new FormData();
       formData.set("file", file);
       formData.set("folder", "memories");
+      formData.set("category", memories[uploadModal.index].title);
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -190,11 +209,11 @@ export default function Memories() {
           ...updated[uploadModal.index],
           images: [...updated[uploadModal.index].images, data.url],
         };
-        persistImages(updated);
         return updated;
       });
 
       setTimeout(() => closeUploadModal(), 600);
+      setTimeout(() => fetchMemories(true), 2500);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error subiendo imagen");
     } finally {
